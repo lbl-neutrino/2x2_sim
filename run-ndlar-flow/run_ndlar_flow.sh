@@ -44,17 +44,17 @@ cd "$ARCUBE_INSTALL_DIR"/ndlar_flow
 # ensures that we properly report the failure to the production system.
 set -o errexit
 
+run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 \
+    -i "$inFile" -o "$outFile"
+
 #run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
 #    -i "$inFile" -o "$outFile"
 
-run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
-    -i "$inFile" -o "$outFile"
+# run h5flow -c $workflow6 $workflow7\
+    # -i "$inFile" -o "$outFile"
 
-run h5flow -c $workflow6 $workflow7\
-    -i "$inFile" -o "$outFile"
-
-run h5flow -c $workflow8\
-    -i "$outFile" -o "$outFile"
+# run h5flow -c $workflow8\
+    # -i "$outFile" -o "$outFile"
 
 mkdir -p "$outDir/FLOW/$subDir"
 mv "$outFile" "$outDir/FLOW/$subDir"

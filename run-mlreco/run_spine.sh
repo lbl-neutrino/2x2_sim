@@ -7,6 +7,9 @@ source load_mlreco.inc.sh
 
 [ -z "$ARCUBE_SPINE_CONFIG" ] && export ARCUBE_SPINE_CONFIG="2x2_full_chain_flash_240819.cfg"
 
+ARCUBE_SPINE_NUM_THREADS=16
+ARCUBE_SPINE_OPENBLAS_NUM_THREADS=4
+
 # Only export onwards if the vars are filled. The exports are a tip from Kazu and
 # required for NDLAr.
 [ -n "$ARCUBE_SPINE_NUM_THREADS" ] && export NUM_THREADS=$ARCUBE_SPINE_NUM_THREADS

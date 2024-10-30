@@ -13,6 +13,9 @@ import glob
 
 from ROOT import TG4Event, TFile, TMap
 
+#user implementation of SplitMix64 RNG
+import splitmix
+
 # Output array datatypes
 segments_dtype = np.dtype([("event_id","u4"),("vertex_id", "u8"), ("segment_id", "u4"),
                            ("z_end", "f4"),("traj_id", "u4"), ("file_traj_id", "u4"), ("tran_diff", "f4"),
@@ -25,7 +28,10 @@ segments_dtype = np.dtype([("event_id","u4"),("vertex_id", "u8"), ("segment_id",
                            ("pixel_plane", "i4"), ("t_end", "f8"),
                            ("dEdx", "f4"), ("dE", "f4"), ("t", "f8"),
                            ("y", "f4"), ("x", "f4"), ("z", "f4"),
-                           ("n_photons","f4")], align=True)
+                           ("n_photons", "f4"),
+                           ("e_field", "f4"), ("v_drift", "f4"), ("e_lifet", "f4"),
+                           ("tr_diff", "f4"), ("lg_diff", "f4"),
+                           ("birks_a", "f4"), ("birks_k", "f4"), ("w_ion", "f4")], align=True)
 
 trajectories_dtype = np.dtype([("event_id","u4"), ("vertex_id", "u8"),
                                ("traj_id", "u4"), ("file_traj_id", "u4"), ("parent_id", "i4"), ("primary", "?"),
@@ -54,6 +60,11 @@ genie_hdr_dtype = np.dtype([("event_id", "u4"), ("vertex_id", "u8"),
                             ("Elep", "f4"), ("lep_mom", "f4"), ("lep_ang", "f4"), ("lep_pdg", "i4"),
                             ("q0", "f4"), ("q3", "f4"), ("Q2", "f4"),
                             ("x", "f4"), ("y", "f4")], align=True)
+
+snowstorm_dtype = np.dtype([("event_id", "u4"),
+                            ("e_field", "f4"), ("v_drift", "f4"), ("e_lifet", "f4"),
+                            ("lg_diff", "f4"), ("tr_diff", "f4"),
+                            ("birks_a", "f4"), ("birks_k", "f4"), ("w_ion", "f4")], align=True)
 
 # Convert from EDepSim default units (mm, ns)
 edep2cm = 0.1   # convert to cm
@@ -180,6 +191,17 @@ def matchTrackID(traj_list, part_4mom, part_pdg):
 
     return traj_id, file_traj_id
 
+def calc_drift_vel(E):
+    P1 = -0.01481
+    P2 = -0.0075
+    P3 = 0.141
+    P4 = 12.4
+    P5 = 1.627
+    P6 = 0.317
+    TD = 87 - 90.371
+
+    return 0.1*(P1*TD+1.0)*(P3*E*np.log(1+P4/E)+P5*E**P6)+P2*TD
+
 #Map from GENIE reaction to number to match CAFs
 #Derived from the enum defition and genie::ScatteringType::AsString() fuction from here:
 #https://github.com/GENIE-MC/Generator/blob/master/src/Framework/Interaction/ScatteringType.h
@@ -228,10 +250,11 @@ def initHDF5File(output_file):
         f.create_dataset('vertices', (0,), dtype=vertices_dtype, maxshape=(None,))
         f.create_dataset('mc_stack', (0,), dtype=genie_stack_dtype, maxshape=(None,))
         f.create_dataset('mc_hdr', (0,), dtype=genie_hdr_dtype, maxshape=(None,))
+        f.create_dataset('snowstorm', (0,), dtype=snowstorm_dtype, maxshape=(None,))
 
 # Resize HDF5 file and save output arrays
-def updateHDF5File(output_file, trajectories, segments, vertices, genie_s, genie_h):
-    if any([len(trajectories), len(segments), len(vertices), len(genie_s), len(genie_h)]):
+def updateHDF5File(output_file, trajectories, segments, vertices, genie_s, genie_h, snowstorm):
+    if any([len(trajectories), len(segments), len(vertices), len(genie_s), len(genie_h), len(snowstorm)]):
         with h5py.File(output_file, 'a') as f:
             if len(trajectories):
                 ntraj = len(f['trajectories'])
@@ -257,6 +280,11 @@ def updateHDF5File(output_file, trajectories, segments, vertices, genie_s, genie
                 ngenie_h = len(f['mc_hdr'])
                 f['mc_hdr'].resize((ngenie_h+len(genie_h),))
                 f['mc_hdr'][ngenie_h:] = genie_h
+
+            if len(snowstorm):
+                nflakes = len(f['snowstorm'])
+                f['snowstorm'].resize((nflakes+len(snowstorm),))
+                f['snowstorm'][nflakes:] = snowstorm
 
 # Read a file and dump it.
 def dump(input_file, output_file, keep_all_dets=False):
@@ -298,6 +326,7 @@ def dump(input_file, output_file, keep_all_dets=False):
         # for setting t_spill
         spillCounter = -1
         lastSpill = None        # Most-recent global spill ID
+        save_snow = True
 
     # Read all of the events.
     entries = inputTree.GetEntriesFast()
@@ -315,6 +344,7 @@ def dump(input_file, output_file, keep_all_dets=False):
     vertices_list = list()
     genie_stack_list = list()
     genie_hdr_list = list()
+    snowstorm_list = list()
 
     # For assigning unique-in-file track IDs:
     trackCounter = 0
@@ -339,6 +369,7 @@ def dump(input_file, output_file, keep_all_dets=False):
             if spill_it != lastSpill: # New spill?
                 spillCounter += 1
                 lastSpill = spill_it
+                save_snow = True
             t_spill = spillCounter * spillPeriod_s * 1E6 # convert to us
 
         #print("event",event.EventId,"in spill",spill_it)
@@ -351,13 +382,15 @@ def dump(input_file, output_file, keep_all_dets=False):
                 np.concatenate(segments_list, axis=0) if segments_list else np.empty((0,)),
                 np.concatenate(vertices_list, axis=0) if vertices_list else np.empty((0,)),
                 np.concatenate(genie_stack_list, axis=0) if genie_stack_list else np.empty((0,)),
-                np.concatenate(genie_hdr_list, axis=0) if genie_hdr_list else np.empty((0,)))
+                np.concatenate(genie_hdr_list, axis=0) if genie_hdr_list else np.empty((0,)),
+                np.concatenate(snowstorm_list, axis=0) if snowstorm_list else np.empty((0,)))
 
             trajectories_list = list()
             segments_list = list()
             vertices_list = list()
             genie_hdr_list = list()
             genie_stack_list = list()
+            snowstorm_list = list()
 
         if nb <= 0:
             continue
@@ -374,6 +407,35 @@ def dump(input_file, output_file, keep_all_dets=False):
 
         #print("Class: ", event.ClassName())
         #print("Event number:", event.EventId)
+
+        snowstorm_val = np.empty(1, dtype=snowstorm_dtype)
+        #Generate values for Snowstorm
+
+        # Ideally use RNG from numpy or other library, but for now use one implemented in 2x2_sim repository
+        # rng = np.random.Generator(np.random.MT19937(spill_it))
+        rng = splitmix.SplitMix64(spill_it)
+        e_field = rng.gaussian(1.0, 0.02) * 0.50
+        v_drift = calc_drift_vel(e_field)
+        e_lifet = rng.gaussian(1.0, 0.05) * 2.2e3
+        lg_diff = rng.gaussian(1.0, 0.10) * 4.0e-6
+        tr_diff = rng.gaussian(1.0, 0.10) * 8.8e-6
+        birks_a = rng.gaussian(1.0, 0.025) * 0.800
+        birks_k = rng.gaussian(1.0, 0.17) * 0.0486
+        w_ion   = rng.gaussian(1.0, 0.02) * 23.6e-6
+
+        snowstorm_val[0]["event_id"] = spill_it
+        snowstorm_val[0]["e_field"] = e_field
+        snowstorm_val[0]["v_drift"] = v_drift
+        snowstorm_val[0]["e_lifet"] = e_lifet
+        snowstorm_val[0]["lg_diff"] = lg_diff
+        snowstorm_val[0]["tr_diff"] = tr_diff
+        snowstorm_val[0]["birks_a"] = birks_a
+        snowstorm_val[0]["birks_k"] = birks_k
+        snowstorm_val[0]["w_ion"] = w_ion
+
+        if save_snow:
+            snowstorm_list.append(snowstorm_val)
+            save_snow = False
 
         # Count total number of vertices and trajectories
         n_traj = 0
@@ -538,6 +600,14 @@ def dump(input_file, output_file, keep_all_dets=False):
                 segment[iHit]["tran_diff"] = 0
                 segment[iHit]["pixel_plane"] = 0
                 segment[iHit]["n_photons"] = 0
+                segment[iHit]["e_field"] = e_field
+                segment[iHit]["v_drift"] = v_drift
+                segment[iHit]["e_lifet"] = e_lifet
+                segment[iHit]["tr_diff"] = tr_diff
+                segment[iHit]["lg_diff"] = lg_diff
+                segment[iHit]["birks_a"] = birks_a
+                segment[iHit]["birks_k"] = birks_k
+                segment[iHit]["w_ion"]   = w_ion
 
             segments_list.append(segment)
         trajectories_list.append(trajectories[:n_traj])
@@ -639,7 +709,8 @@ def dump(input_file, output_file, keep_all_dets=False):
         np.concatenate(segments_list, axis=0) if segments_list else np.empty((0,)),
         np.concatenate(vertices_list, axis=0) if vertices_list else np.empty((0,)),
         np.concatenate(genie_stack_list, axis=0) if genie_stack_list else np.empty((0,)),
-        np.concatenate(genie_hdr_list, axis=0) if genie_hdr_list else np.empty((0,)))
+        np.concatenate(genie_hdr_list, axis=0) if genie_hdr_list else np.empty((0,)),
+        np.concatenate(snowstorm_list, axis=0) if snowstorm_list else np.empty((0,)))
 
 if __name__ == "__main__":
     fire.Fire(dump)

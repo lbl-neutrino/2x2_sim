@@ -5,6 +5,7 @@ source ../util/init.inc.sh
 
 source load_mlreco.inc.sh
 
+export OMP_NUM_THREADS=16
 [ -z "$ARCUBE_FLOW2SUPERA_CONFIG" ] && export ARCUBE_FLOW2SUPERA_CONFIG="2x2"
 
 outFile=${tmpOutDir}/${outName}.LARCV.root
