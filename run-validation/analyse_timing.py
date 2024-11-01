@@ -21,10 +21,12 @@ def convert_to_minutes(time_string):
 
 
 def get_commands(production_step, n_timing_files):
+    if production_step == 'genie':
+        return {'gevgen_fnal' : [-1.0]*n_timing_files, 'gntpc' : [-1.0]*n_timing_files}
     if production_step == 'edep':
-        return {'gevgen_fnal' : [-1.0]*n_timing_files, 'gntpc' : [-1.0]*n_timing_files, 'edep-sim' : [-1.0]*n_timing_files}
+        return {'edep-sim' : [-1.0]*n_timing_files}
     if production_step == 'hadd':
-        return {'getGhepPOT' : [-1.0]*n_timing_files, 'hadd' : [-1]*n_timing_files}
+        return {'./getGhepPOT' : [-1.0]*n_timing_files, 'hadd' : [-1]*n_timing_files}
     if production_step == 'spill':
         return {'root' : [-1.0]*n_timing_files}
     if production_step == 'convert2h5':
@@ -44,12 +46,16 @@ def get_commands(production_step, n_timing_files):
 
 
 def main(timing_directory, production_step, sample_type, out_dir, remove_fail_on_startup):
-    timing_files = os.listdir(timing_directory)
-
+    # Grab all of the files ending in .time below the directory passed to timing_directory
+    timing_files = [] 
+    for b, _, fs in os.walk(timing_directory):
+        if not fs: continue
+        timing_files += [ os.path.join(b,f) for f in fs if f.endswith(".time") ]
+        
     timing = get_commands(production_step, len(timing_files))
     count = 0
     for timing_file in timing_files:
-        with open (timing_directory+"/"+timing_file) as f:
+        with open (timing_file) as f:
             lines = f.read().split('\n')
             for line in lines:
                 for key in timing.keys():
@@ -66,9 +72,9 @@ def main(timing_directory, production_step, sample_type, out_dir, remove_fail_on
     if remove_fail_on_startup: time_lower_bound = 1.0
     with PdfPages(out_dir+"/analyse_timing_"+sample_type+"_"+production_step+".pdf") as output:
         for key in timing.keys():
-            non_zero_timing = [ time for time in timing[key] if time > time_lower_bound]
+            non_zero_timing = [ time for time in timing[key] if time > time_lower_bound ]
             plt.hist(non_zero_timing, bins=50)
-            plt.title(key+"\nTotal: "+str(sum(non_zero_timing)/60.0)+" raw hours")
+            plt.title(key+"\nTotal: "+str(sum(non_zero_timing)/60.0)+" raw hours.")
             #plt.xlabel('Run time / 10^15 POT (minutes)')
             plt.xlabel('Run time / 10^16 POT (minutes)')
             plt.ylabel(r'Number of executions')
@@ -78,8 +84,8 @@ def main(timing_directory, production_step, sample_type, out_dir, remove_fail_on
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
-    parser.add_argument('--timing_directory', default=None, required=True, type=str, help='''string corresponding to the directory path containing .time files to be analysed.''')
-    parser.add_argument('--production_step', default='edep', choices=['edep', 'hadd', 'spill', 'convert2h5', 'larndsim', 'flow', 'tmsreco', 'flow2supera', 'mlreco_inference', 'mlreco_analysis', 'mlreco_spine', 'cafmaker'], type=str, help='''string corresponding to the directory path containing .time files to be analysed.''')
+    parser.add_argument('--timing_directory', default=None, required=True, type=str, help='''string corresponding to the directory path containing subdirecties with .time files to be analysed.''')
+    parser.add_argument('--production_step', default='edep', choices=['genie', 'edep', 'hadd', 'spill', 'convert2h5', 'larndsim', 'flow', 'tmsreco', 'flow2supera', 'mlreco_inference', 'mlreco_analysis', 'mlreco_spine', 'cafmaker'], type=str, help='''string corresponding to the directory path containing .time files to be analysed.''')
     parser.add_argument('--sample_type', default='spill', choices=['fiducial', 'rock', 'spill'], type=str, help='''string corresponding to the sample type. For output naming purposes only.''')
     parser.add_argument('--out_dir', default="", required=True, type=str, help='''string corresponding to the directory path to write output pdf.''')
     parser.add_argument('--remove_fail_on_startup', default=True, type=bool, help='''dont show processes which fail in the first 1 minute.''')

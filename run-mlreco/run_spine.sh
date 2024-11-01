@@ -24,6 +24,7 @@ sed "s!%TMPDIR%!${tmpDir}!g" "configs/${config}" > "${tmpDir}/${config}"
 
 run python3 install/spine/bin/run.py \
     --config "${tmpDir}/${config}" \
+    --log_dir "$logDir" \
     --source "$inFile" \
     --output "$outFile"
 

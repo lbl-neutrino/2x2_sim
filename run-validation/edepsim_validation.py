@@ -460,15 +460,25 @@ def main(sim_file, input_type, det_complex):
         spill = 0
         packet_duration = 10
         epsillon = 5
-        while ((spill+1)*spill_duration < max_time):
+        n_vertices_per_spill = []
+        while (spill < len(event_id_uniq)):
             this_vertices_time = vertices_time[vertices_time > spill*spill_duration - epsillon]
             this_vertices_time = this_vertices_time[this_vertices_time < spill*(spill_duration) + packet_duration + epsillon]
+            n_vertices_per_spill.append(len(this_vertices_time))
             plt.hist(this_vertices_time, bins=100, range=[spill*spill_duration - epsillon, spill*spill_duration+packet_duration + epsillon])
             plt.xlabel('Vertex t_vert (us)')
             plt.ylabel(r'N Vertices')
             output.savefig()
             plt.close()
             spill += 1
+
+        ### Plot the number of vertices per spill.    
+        plt.hist(n_vertices_per_spill, bins=20)
+        plt.title("Total Vertices: "+str(sum(n_vertices_per_spill)))
+        plt.xlabel('Number of Vertices per Spill')
+        plt.ylabel(r'Spills')
+        output.savefig()
+        plt.close()
 
 
 if __name__ == '__main__':
