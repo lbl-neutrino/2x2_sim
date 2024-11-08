@@ -36,7 +36,7 @@ def main(flow_file, charge_only):
     with PdfPages(output_pdf_name) as output:
 
         hits = flow_h5['/charge/calib_prompt_hits/data']
-        final_hits = flow_h5['/charge/calib_final_hits/data']
+        final_hits = flow_h5['/charge/calib_prompt_hits/data']
 
         if not charge_only:
            ### Event display
@@ -208,13 +208,13 @@ def main(flow_file, charge_only):
         plt.close()
 
         # 3D - "event" spills
-        n_evts = len(flow_h5['charge/events/ref/charge/calib_final_hits/ref_region'])
+        n_evts = len(flow_h5['charge/events/ref/charge/calib_prompt_hits/ref_region'])
         io_group_contrib = np.zeros(shape=(n_evts,len(io_groups_uniq)))
         for a in range(n_evts):
             fig = plt.figure(figsize=(10,10),layout="constrained")
             ax = fig.add_subplot(projection='3d')
             ax.set_facecolor('none')
-            hit_ref_slice = flow_h5['charge/events/ref/charge/calib_final_hits/ref_region'][a]
+            hit_ref_slice = flow_h5['charge/events/ref/charge/calib_prompt_hits/ref_region'][a]
             spill_hits = final_hits[hit_ref_slice[0]:hit_ref_slice[1]]
             event_charge = np.sum(spill_hits['Q'])
             if event_charge==0:
@@ -260,10 +260,10 @@ def main(flow_file, charge_only):
         # true spill ID vs. reconstructed charge event
         fig = plt.figure(figsize=(10,8))
         ax = fig.add_subplot()
-        flow_evt_to_hit = flow_h5['/charge/events/ref/charge/calib_final_hits/ref_region']
+        flow_evt_to_hit = flow_h5['/charge/events/ref/charge/calib_prompt_hits/ref_region']
         flow_evts = flow_h5['/charge/events/data']
-        final_hits = flow_h5['/charge/calib_final_hits/data']
-        hits_bt = flow_h5['mc_truth/calib_final_hit_backtrack/data']
+        final_hits = flow_h5['/charge/calib_prompt_hits/data']
+        hits_bt = flow_h5['mc_truth/calib_prompt_hit_backtrack/data']
         segments = flow_h5['mc_truth/segments/data']
 
         # Construct a lookup array from segment ID to segment index :`(
@@ -307,7 +307,7 @@ def main(flow_file, charge_only):
         gs = fig.add_gridspec(3,3)
         ax = []
         for a in range(9):
-            hit_ref_slice = flow_h5['charge/events/ref/charge/calib_final_hits/ref_region'][a]
+            hit_ref_slice = flow_h5['charge/events/ref/charge/calib_prompt_hits/ref_region'][a]
             spill_hits = final_hits[hit_ref_slice[0]:hit_ref_slice[1]]
             ax.append(fig.add_subplot(gs[a//3,a%3],projection='3d'))
             dat = ax[a].scatter(spill_hits['z'],spill_hits['x'],
@@ -428,37 +428,37 @@ def main(flow_file, charge_only):
         ax6 = fig.add_subplot(gs[1,2])
         
         ax1.hist(flow_h5['charge/calib_prompt_hits/data']['x'],bins=100,alpha=0.5,label='prompt hits')
-        ax1.hist(flow_h5['charge/calib_final_hits/data']['x'],bins=100,alpha=0.5,label='merged hits')
+        ax1.hist(flow_h5['charge/calib_prompt_hits/data']['x'],bins=100,alpha=0.5,label='merged hits')
         ax1.set_xlabel('x [cm]')
         ax1.set_ylabel('N hits')
         #ax1.legend()
         
         ax2.hist(flow_h5['charge/calib_prompt_hits/data']['y'],bins=100,alpha=0.5,label='prompt hits')
-        ax2.hist(flow_h5['charge/calib_final_hits/data']['y'],bins=100,alpha=0.5,label='merged hits')
+        ax2.hist(flow_h5['charge/calib_prompt_hits/data']['y'],bins=100,alpha=0.5,label='merged hits')
         ax2.set_xlabel('y [cm]')
         ax2.set_ylabel('N hits')
         ax2.legend()
         
         ax3.hist(flow_h5['charge/calib_prompt_hits/data']['z'],bins=100,alpha=0.5,label='prompt hits')
-        ax3.hist(flow_h5['charge/calib_final_hits/data']['z'],bins=100,alpha=0.5,label='merged hits')
+        ax3.hist(flow_h5['charge/calib_prompt_hits/data']['z'],bins=100,alpha=0.5,label='merged hits')
         ax3.set_xlabel('z [cm]')
         ax3.set_ylabel('N hits')
         #ax3.legend()
         
         ax4.hist(flow_h5['charge/calib_prompt_hits/data']['x'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='prompt hits')
-        ax4.hist(flow_h5['charge/calib_final_hits/data']['x'],weights=flow_h5['charge/calib_final_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
+        ax4.hist(flow_h5['charge/calib_prompt_hits/data']['x'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
         ax4.set_xlabel('x [cm]')
         ax4.set_ylabel('Energy [MeV]')
         #ax4.legend()
         
         ax5.hist(flow_h5['charge/calib_prompt_hits/data']['y'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='prompt hits')
-        ax5.hist(flow_h5['charge/calib_final_hits/data']['y'],weights=flow_h5['charge/calib_final_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
+        ax5.hist(flow_h5['charge/calib_prompt_hits/data']['y'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
         ax5.set_xlabel('y [cm]')
         ax5.set_ylabel('Energy [MeV]')
         #ax5.legend()
         
         ax6.hist(flow_h5['charge/calib_prompt_hits/data']['z'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='prompt hits')
-        ax6.hist(flow_h5['charge/calib_final_hits/data']['z'],weights=flow_h5['charge/calib_final_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
+        ax6.hist(flow_h5['charge/calib_prompt_hits/data']['z'],weights=flow_h5['charge/calib_prompt_hits/data']['E'],bins=100,alpha=0.5,label='merged hits')
         ax6.set_xlabel('z [cm]')
         ax6.set_ylabel('Energy [MeV]')
         #ax6.legend()
@@ -467,7 +467,7 @@ def main(flow_file, charge_only):
         plt.close()
         
         #ax4.hist(flow_h5['charge/calib_prompt_hits/data']['ts_pps'],bins=100,alpha=0.5,label='prompt hits')
-        #ax4.hist(flow_h5['charge/calib_final_hits/data']['ts_pps'],bins=100,alpha=0.5,label='merged hits')
+        #ax4.hist(flow_h5['charge/calib_prompt_hits/data']['ts_pps'],bins=100,alpha=0.5,label='merged hits')
         #ax4.set_xlabel('ts_pps [ticks = 0.1 us]')
         #ax4.set_ylabel('N hits')
         #ax4.legend()
@@ -491,7 +491,7 @@ def main(flow_file, charge_only):
                      edgecolor='#ff7f00', linestyle='-', 
                      linewidth=1.5,fill=False)
             ax1.hist(final_hits['io_group'], 
-                     label="calib_final_hits", bins=len(io_groups_uniq), range=(1, len(io_groups_uniq)+1),
+                     label="calib_prompt_hits", bins=len(io_groups_uniq), range=(1, len(io_groups_uniq)+1),
                      alpha=0.8, color='#4daf4a', 
                      edgecolor='#4daf4a', linestyle='--', 
                      linewidth=1.5,fill=False)
@@ -545,7 +545,7 @@ def main(flow_file, charge_only):
                      edgecolor='#ff7f00', linestyle='-', 
                      linewidth=1.5,fill=False)
             ax1.hist(final_hits['io_channel'], 
-                     label="calib_final_hits", bins=len(io_channel_uniq), range=(1, len(io_channel_uniq)+1), 
+                     label="calib_prompt_hits", bins=len(io_channel_uniq), range=(1, len(io_channel_uniq)+1), 
                      alpha=0.8, color='#4daf4a', 
                      edgecolor='#4daf4a', linestyle='--', 
                      linewidth=1.5,fill=False)

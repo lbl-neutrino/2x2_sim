@@ -47,7 +47,11 @@ set -o errexit
 #run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
 #    -i "$inFile" -o "$outFile"
 
-run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
+#run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
+#    -i "$inFile" -o "$outFile"
+
+#MiniRun 6.1 without the hit merger worksflow
+run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4\
     -i "$inFile" -o "$outFile"
 
 run h5flow -c $workflow6 $workflow7\
