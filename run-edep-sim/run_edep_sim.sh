@@ -37,6 +37,6 @@ run edep-sim -C -g "$ARCUBE_GEOM_EDEP" -o "$edepRootFile" -e "$nEvents" \
 mkdir -p "$outDir/EDEPSIM/$subDir"
 mv "$edepRootFile" "$outDir/EDEPSIM/$subDir"
 
-if [ -f "macros/particle-gun-modified.mac" ]; then
-    rm -f "macros/particle-gun-modified.mac"
+if [ -f "macros/modified-temp-file.mac" ]; then
+    rm -f "macros/modified-temp-file.mac"
 fi
