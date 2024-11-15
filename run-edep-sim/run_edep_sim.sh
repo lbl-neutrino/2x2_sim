@@ -3,13 +3,18 @@
 source ../util/reload_in_container.inc.sh
 source ../util/init.inc.sh
 
-genieOutPrefix=${ARCUBE_OUTDIR_BASE}/run-genie/${ARCUBE_GENIE_NAME}/GTRAC/$subDir/${ARCUBE_GENIE_NAME}.$globalIdx
-genieFile="$genieOutPrefix".GTRAC.root
 
-rootCode='
-auto t = (TTree*) _file0->Get("gRooTracker");
-std::cout << t->GetEntries() << std::endl;'
-nEvents=$(echo "$rootCode" | root -l -b "$genieFile" | tail -1)
+
+if [ "$ARCUBE_BEAM_TYPE" = "particle_gun" ]; then
+    nEvents=$ARCUBE_EXPOSURE
+else
+    genieOutPrefix=${ARCUBE_OUTDIR_BASE}/run-genie/${ARCUBE_GENIE_NAME}/GTRAC/$subDir/${ARCUBE_GENIE_NAME}.$globalIdx
+    genieFile="$genieOutPrefix".GTRAC.root
+    rootCode='
+    auto t = (TTree*) _file0->Get("gRooTracker");
+    std::cout << t->GetEntries() << std::endl;'
+    nEvents=$(echo "$rootCode" | root -l -b "$genieFile" | tail -1)
+fi
 
 edepRootFile=$tmpOutDir/${outName}.EDEPSIM.root
 rm -f "$edepRootFile"
