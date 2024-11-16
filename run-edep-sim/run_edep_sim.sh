@@ -3,16 +3,17 @@
 source ../util/reload_in_container.inc.sh
 source ../util/init.inc.sh
 
-
-
 if [ $(echo "$ARCUBE_BEAM_TYPE") = "particle_gun" ]; 
-    then nEvents=$ARCUBE_EXPOSURE
+    then nEvents=$(printf "%.0f" $(echo "$ARCUBE_EXPOSURE" | awk '{printf "%f", $1}'))
+    echo 'ARCUBE_EXPOSURE' $ARCUBE_EXPOSURE
+    echo "nEvents: $nEvents"
+    tempMacroFile=$(mktemp)
     rm -f "macros/particle-gun-modified.mac"
     sed -e "s/@ARCUBE_PARTICLE_TYPE@/$ARCUBE_PARTICLE_TYPE/g" \
         -e "s/@ARCUBE_ENERGY_MINIMUM@/$ARCUBE_ENERGY_MINIMUM/g" \
         -e "s/@ARCUBE_ENERGY_MAXIMUM@/$ARCUBE_ENERGY_MAXIMUM/g" \
-        $ARCUBE_EDEP_MAC > macros/modified-temp-file.mac
-    export ARCUBE_EDEP_MAC='macros/modified-temp-file.mac'
+        $ARCUBE_EDEP_MAC > "$tempMacroFile"
+    export ARCUBE_EDEP_MAC="$tempMacroFile"
 else
     genieOutPrefix=${ARCUBE_OUTDIR_BASE}/run-genie/${ARCUBE_GENIE_NAME}/GTRAC/$subDir/${ARCUBE_GENIE_NAME}.$globalIdx
     genieFile="$genieOutPrefix".GTRAC.root
@@ -37,6 +38,6 @@ run edep-sim -C -g "$ARCUBE_GEOM_EDEP" -o "$edepRootFile" -e "$nEvents" \
 mkdir -p "$outDir/EDEPSIM/$subDir"
 mv "$edepRootFile" "$outDir/EDEPSIM/$subDir"
 
-if [ -f "macros/modified-temp-file.mac" ]; then
-    rm -f "macros/modified-temp-file.mac"
+if [ -f "$tempMacroFile" ]; then
+    rm -f "$tempMacroFile"
 fi
