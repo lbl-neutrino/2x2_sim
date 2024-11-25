@@ -12,4 +12,6 @@ slurm-*.out
 *.h5
 *.hdf5
 *.root
+*.exe
+*.cfg
 tmp_bin
