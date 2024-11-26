@@ -7,7 +7,7 @@ TARGET = corsikaConverter
 default: $(TARGET)
 
 $(TARGET): $(TARGET).cc
-	g++ -O2 -Wno-deprecated $(TARGET).cc -o corsikaConverter -pthread $(CFLAGS) $(LFLAGS) -rdynamic -Wall
+	g++ -O2 -Wno-deprecated $(TARGET).cc -o corsikaConverter $(CFLAGS) $(LFLAGS) -rdynamic -Wall
 
 clean:
 	$(RM) corsikaConverter
