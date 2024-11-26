@@ -1,56 +1,56 @@
 #!/usr/bin/env bash
-# Run CORSIKA
 
-# set -x
+# CORSIKA needs the FNAL environment to run
+# So override the container definition and put it back at the end
+ORG_CONTAINER=${ARCUBE_CONTAINER}
 export ARCUBE_RUNTIME=SHIFTER
 export ARCUBE_CONTAINER=fermilab/fnal-wn-sl7:latest
 
 source ../util/reload_in_container.inc.sh
 source ../util/init.inc.sh
 
+# Need to unset these options to allow UPS to not exit on error
 set +o errexit
 set +o pipefail
 
+# Run the necessary UPS setup commands and finally CORSIKA
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh
 setup corsika
 
-NSHOW=100
-DET=0
+ARCUBE_NSHOW=10000
+ARCUBE_LOC="BERN"
 RNDSEED=11
 RNDSEED2=121
-# OUTDIR=$5
 
-if [ "${DET}" == "0" ]; then
-# Bern (single module tests)
-DETNAME=BERN
-OBSLEV=550E2
-Bx=21.793
-Bz=42.701
-elif [ "${DET}" == "1" ]; then
-# MINOS Hall (2x2)
-DETNAME=MINOS_HALL
-OBSLEV=119E2
-Bx=19.310
-Bz=49.433
+if [ "${ARCUBE_LOC}" == "BERN" ]; then
+    # Bern (single module tests)
+    DETNAME=BERN
+    OBSLEV=550E2
+    Bx=21.793
+    Bz=42.701
+elif [ "${ARCUBE_LOC}" == "MINOS" ]; then
+    # MINOS Hall (2x2)
+    DETNAME=MINOS_HALL
+    OBSLEV=119E2
+    Bx=19.310
+    Bz=49.433
 else
-DETNAME=MINOS_HALL
-OBSLEV=119E2
-Bx=19.310
-Bz=49.433
+    echo "Invalid location for cosmic simulation: ${ARCUBE_LOC}"
+    echo "Set \$ARCUBE_LOC to a valid choice"
+    exit 1
 fi
 
 echo "Using observation level of ${OBSLEV} cm and magnetic field values of Bx = ${Bx} and Bz = ${Bz} microteslas, corresponding to ${DETNAME}."
 
 ##################################################
 # Run CORSIKA
-echo "Running corsika"
 
 gen_corsika_config() {
 cat << EOF > corsika_${runNo}.cfg
-RUNNR   ${runNo}                              run number
+RUNNR   ${runNo}                       run number
 EVTNR   1                              number of first shower event
-NSHOW   ${NSHOW}                        number of showers to generate
+NSHOW   ${ARCUBE_NSHOW}                number of showers to generate
 PRMPAR  14                             particle type of prim. particle  (14=p)
 ESLOPE  -2.7                           slope of primary energy spectrum
 ERANGE  1.3 100000                    energy range of primary (GeV)
@@ -89,3 +89,10 @@ corsika77400Linux_QGSJET_fluka < corsika_${runNo}.cfg #> ${logDir}/corsika.${run
 
 printf -v CORSIKA_OUTPUT "DAT%.6d" ${runNo}
 # mv ${CORSIKA_OUTPUT} ${outDir}/${outName}.dat
+
+export ARCUBE_CONTAINER=$ORG_ARCUBE_CONTAINER
+
+# Clean up after CORSIKA
+if [ -f .timer.out ]; then
+    rm .timer.out
+fi
