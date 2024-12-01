@@ -17,6 +17,7 @@ cfgFile=$(mktemp --suffix .cfg)
 args_gen_cafmaker_cfg=( \
     --base-dir "$ARCUBE_OUTDIR_BASE" \
     --spine-name "$ARCUBE_SPINE_NAME" \
+    --pandora-name "$ARCUBE_PANDORA_NAME" \
     --caf-path "$outFile" \
     --cfg-file "$cfgFile" \
     --file-id "$ARCUBE_INDEX" \

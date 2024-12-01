@@ -41,6 +41,7 @@ def main():
     ap.add_argument('--ghep-nu-name', required=False)
     ap.add_argument('--ghep-rock-name', required=False)
     ap.add_argument('--spine-name', required=True)
+    ap.add_argument('--pandora-name', required=True)
     ap.add_argument('--tmsreco-name', required=False)
     ap.add_argument('--minerva-name', required=False)
     ap.add_argument('--edepsim-name', required=False)
@@ -75,6 +76,10 @@ def main():
         spine_path = get_path(args.base_dir, 'run-mlreco', args.spine_name,
                                'MLRECO_SPINE', 'hdf5', args.file_id)
         outf.write(f'nd_cafmaker.CAFMakerSettings.NDLArRecoFile: "{spine_path}"\n')
+
+        pandora_path = get_path(args.base_dir, 'run-pandora', args.pandora_name,
+                                'LAR_RECO_ND', 'root', args.file_id)
+        outf.write(f'nd_cafmaker.CAFMakerSettings.PandoraLArRecoNDFile: "{pandora_path}"\n')
 
         if args.minerva_name:
             minerva_path = get_path(args.base_dir, 'run-minerva', args.minerva_name,
