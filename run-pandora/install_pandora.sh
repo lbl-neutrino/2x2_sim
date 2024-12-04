@@ -70,10 +70,11 @@ cd $ARCUBE_PANDORA_INSTALL
 git clone https://github.com/PandoraPFA/LArMachineLearningData.git
 cd LArMachineLearningData
 git checkout $ARCUBE_PANDORA_LAR_MLDATA_VERSION
-# Download training files: only do this once to avoid google drive's access restrictions (up to 24 hrs wait)
-. download.sh sbnd
-. download.sh dune
-. download.sh dunend
+# # Download training files: only do this once to avoid google drive's access restrictions (up to 24 hrs wait)
+# . download.sh sbnd
+# . download.sh dune
+# . download.sh dunend
+cp -r /global/cfs/cdirs/dune/www/data/pandora/LArMachineLearningData/* .
 
 # Install h5flow for converting HDF5 input files to ROOT for LArRecoND
 cd $ARCUBE_PANDORA_INSTALL
