@@ -40,6 +40,10 @@ pushd run-ndlar-flow
 ./install_ndlar_flow.sh
 popd
 
+pushd run-pandora
+./install_pandora.sh
+popd
+
 pushd run-mlreco
 ./install_mlreco.sh
 popd
