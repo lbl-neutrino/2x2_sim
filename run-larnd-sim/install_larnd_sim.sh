@@ -42,7 +42,7 @@ pip install --upgrade pip setuptools wheel
 pip install cupy-cuda11x==13.1.0
 
 # https://docs.nersc.gov/development/languages/python/using-python-perlmutter/#installing-with-pip
-( git clone -b nd-production-v02.00 https://github.com/DUNE/larnd-sim.git
+( git clone -b nd-production-v02.01 https://github.com/DUNE/larnd-sim.git
   cd larnd-sim
   # used for MiniRun4
   # git checkout 383ead57929c15ebcb2d619e79ab6c8a3f610b89

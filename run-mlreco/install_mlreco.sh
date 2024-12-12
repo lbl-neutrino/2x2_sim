@@ -54,7 +54,7 @@ git submodule update --init     # pybind11
 pip install .
 cd ..
 
-git clone -b nd-production-v02.00 https://github.com/YifanC/larpix_readout_parser.git
+git clone -b nd-production-v02.01 https://github.com/YifanC/larpix_readout_parser.git
 cd larpix_readout_parser
 pip install .
 cd ..
