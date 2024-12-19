@@ -17,11 +17,11 @@ set +o pipefail
 source /cvmfs/dune.opensciencegrid.org/products/dune/setup_dune.sh
 source /cvmfs/mu2e.opensciencegrid.org/setupmu2e-art.sh
 setup corsika
+# setup python v3_9_15
 
-ARCUBE_NSHOW=10000
-ARCUBE_LOC="BERN"
-RNDSEED=11
-RNDSEED2=121
+NSHOW=${ARCUBE_NSHOW:-10000}
+RNDSEED=110
+RNDSEED2=1210
 
 if [ "${ARCUBE_LOC}" == "BERN" ]; then
     # Bern (single module tests)
@@ -41,6 +41,7 @@ else
     exit 1
 fi
 
+echo "Generating ${NSHOW} showers / events."
 echo "Using observation level of ${OBSLEV} cm and magnetic field values of Bx = ${Bx} and Bz = ${Bz} microteslas, corresponding to ${DETNAME}."
 
 ##################################################
@@ -50,7 +51,7 @@ gen_corsika_config() {
 cat << EOF > corsika_${runNo}.cfg
 RUNNR   ${runNo}                       run number
 EVTNR   1                              number of first shower event
-NSHOW   ${ARCUBE_NSHOW}                number of showers to generate
+NSHOW   ${NSHOW}                       number of showers to generate
 PRMPAR  14                             particle type of prim. particle  (14=p)
 ESLOPE  -2.7                           slope of primary energy spectrum
 ERANGE  1.3 100000                    energy range of primary (GeV)

@@ -7,5 +7,6 @@ printf -v CORSIKA_OUTPUT "DAT%.6d" ${runNo}
 
 ./corsikaConverter.exe ${CORSIKA_OUTPUT}
 
-mv ${CORSIKA_OUTPUT}.root ${outDir}/${outName}.root
-mv ${CORSIKA_OUTPUT} ${outDir}/${outName}.dat
+mkdir -p "$outDir/CORSIKA/$subDir"
+mv ${CORSIKA_OUTPUT}.root ${outDir}/CORSIKA/${subDir}/${outName}.CORSIKA.root
+mv ${CORSIKA_OUTPUT} ${outDir}/CORSIKA/${subDir}/${outName}.CORSIKA.dat
