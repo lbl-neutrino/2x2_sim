@@ -226,8 +226,8 @@ def initHDF5File(output_file):
         f.create_dataset('trajectories', (0,), dtype=trajectories_dtype, maxshape=(None,))
         f.create_dataset('segments', (0,), dtype=segments_dtype, maxshape=(None,))
         f.create_dataset('vertices', (0,), dtype=vertices_dtype, maxshape=(None,))
-        f.create_dataset('mc_stack', (0,), dtype=genie_stack_dtype, maxshape=(None,))
-        f.create_dataset('mc_hdr', (0,), dtype=genie_hdr_dtype, maxshape=(None,))
+        # f.create_dataset('mc_stack', (0,), dtype=genie_stack_dtype, maxshape=(None,))
+        # f.create_dataset('mc_hdr', (0,), dtype=genie_hdr_dtype, maxshape=(None,))
 
 # Resize HDF5 file and save output arrays
 def updateHDF5File(output_file, trajectories, segments, vertices, genie_s, genie_h):
