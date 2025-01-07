@@ -1,0 +1,44 @@
+## Particle Gun Macro for edep-sim
+
+## Physics changes
+
+## Not everything is LAr
+/edep/phys/ionizationModel 0
+
+# This ensures that each hit segment in the LAr is only associated with one
+# trajectory. It must be run BEFORE /edep/update.
+/edep/hitSeparation volTPCActive -1 mm
+
+/edep/update
+
+/generator/kinematics/set gps
+
+# print commands
+/gps/verbose 2
+
+# generate particles
+/gps/particle @ARCUBE_PARTICLE_TYPE@
+
+# next, we generate a flat distribution with each muon between $ARCUBE_ENERGY_MINIMUM and $ARCUBE_ENERGY_MAXIMUM (Gradient of 0 means flat and )
+/gps/ene/type Lin
+/gps/ene/min @ARCUBE_ENERGY_MINIMUM@
+/gps/ene/max @ARCUBE_ENERGY_MAXIMUM@
+/gps/ene/gradient 0
+/gps/ene/intercept 1 #
+
+# Specify the volume where we want the muons to be produced in. THIS MAY NEED TO BE CHANGED WHEN GDML CHANGES TOO!
+
+/gps/position 0.0 -0.5 7.0 m
+/gps/pos/type Volume
+/gps/pos/shape Para
+/gps/pos/halfx 3.5 m 
+/gps/pos/halfy 2.0 m 
+/gps/pos/halfz 3.0 m
+
+/gps/ang/type cos # Not fully convinced this should be cosine law 
+/gps/ang/maxtheta 90 deg # Remember this is 0-90 deg and the rotating it by phi 0-360 deg gives a hemisphere pointing in beam direction
+/gps/ang/rot1 1 0 0
+/gps/ang/rot2 0 -1 0
+
+# hopefully that shows what it's using
+/gps/source/show
