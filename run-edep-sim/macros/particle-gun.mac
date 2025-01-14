@@ -4,6 +4,7 @@
 
 ## Not everything is LAr
 /edep/phys/ionizationModel 0
+/edep/random/timeRandomSeed
 
 # This ensures that each hit segment in the LAr is only associated with one
 # trajectory. It must be run BEFORE /edep/update.
