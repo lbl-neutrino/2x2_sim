@@ -315,6 +315,9 @@
     <!-- allow entry to be reused 10 times before moving on -->
     <reuse> 10 </reuse>
 
+    <!-- As discussed in this slack thread https://dunescience.slack.com/archives/C62ALUT7C/p1692270471363809 -->
+    <!-- even if you specify upstreamz here in the xml and don’t pass a -z to gevgen_fnal on the command line -->
+    <!-- the value used is actually just gevgen's default. ALWAYS use -z in the commomand line. -->
     <upstreamz> -2e30 </upstreamz>
 
 
