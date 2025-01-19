@@ -17,26 +17,27 @@ else
     fi
 fi
 
-inDir=${ARCUBE_OUTDIR_BASE}/run-larnd-sim/$ARCUBE_IN_NAME
-inName=$ARCUBE_IN_NAME.$globalIdx
-inFile=$(realpath $inDir/LARNDSIM/$subDir/${inName}.LARNDSIM.hdf5)
+#inDir=${ARCUBE_OUTDIR_BASE}/run-larnd-sim/$ARCUBE_IN_NAME
+#inName=$ARCUBE_IN_NAME.$globalIdx
+#inFile=$(realpath $inDir/LARNDSIM/$subDir/${inName}.LARNDSIM.hdf5)
+inFile=$1
 
 outFile=$tmpOutDir/${outName}.FLOW.hdf5
 rm -f "$outFile"
 
 # charge workflows
-workflow1='yamls/proto_nd_flow/workflows/charge/charge_event_building_mc.yaml'
-workflow2='yamls/proto_nd_flow/workflows/charge/charge_event_reconstruction_mc.yaml'
-workflow3='yamls/proto_nd_flow/workflows/combined/combined_reconstruction_mc.yaml'
-workflow4='yamls/proto_nd_flow/workflows/charge/prompt_calibration_mc.yaml'
-workflow5='yamls/proto_nd_flow/workflows/charge/final_calibration_mc.yaml'
+workflow1='yamls/proto_nd_flow/workflows/charge/charge_event_building_data.yaml'
+workflow2='yamls/proto_nd_flow/workflows/charge/charge_event_reconstruction_data.yaml'
+workflow3='yamls/proto_nd_flow/workflows/combined/combined_reconstruction_data.yaml'
+workflow4='yamls/proto_nd_flow/workflows/charge/prompt_calibration_data.yaml'
+workflow5='yamls/proto_nd_flow/workflows/charge/final_calibration_data.yaml'
 
 # light workflows
-workflow6='yamls/proto_nd_flow/workflows/light/light_event_building_mc.yaml'
-workflow7='yamls/proto_nd_flow/workflows/light/light_event_reconstruction_mc.yaml'
+workflow6='yamls/proto_nd_flow/workflows/light/light_event_building_data.yaml'
+workflow7='yamls/proto_nd_flow/workflows/light/light_event_reconstruction_data.yaml'
 
 # charge-light trigger matching
-workflow8='yamls/proto_nd_flow/workflows/charge/charge_light_assoc_mc.yaml'
+workflow8='yamls/proto_nd_flow/workflows/charge/charge_light_assoc_data.yaml'
 
 cd "$ARCUBE_INSTALL_DIR"/ndlar_flow
 
@@ -50,11 +51,11 @@ set -o errexit
 run h5flow -c $workflow1 $workflow2 $workflow3 $workflow4 $workflow5\
     -i "$inFile" -o "$outFile"
 
-run h5flow -c $workflow6 $workflow7\
-    -i "$inFile" -o "$outFile"
+#run h5flow -c $workflow6 $workflow7\
+#    -i "$inFile" -o "$outFile"
 
-run h5flow -c $workflow8\
-    -i "$outFile" -o "$outFile"
+#run h5flow -c $workflow8\
+#    -i "$outFile" -o "$outFile"
 
 mkdir -p "$outDir/FLOW/$subDir"
 mv "$outFile" "$outDir/FLOW/$subDir"

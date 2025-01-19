@@ -1,0 +1,168 @@
+RUNNING h5flow -c yamls/proto_nd_flow/workflows/charge/charge_event_building_data.yaml yamls/proto_nd_flow/workflows/charge/charge_event_reconstruction_data.yaml yamls/proto_nd_flow/workflows/combined/combined_reconstruction_data.yaml yamls/proto_nd_flow/workflows/charge/prompt_calibration_data.yaml yamls/proto_nd_flow/workflows/charge/final_calibration_data.yaml -i /global/cfs/cdirs/dune/www/data/2x2/nearline/packet/beam/july10_2024/nominal_hv/packet-0050018-2024_07_10_10_16_18_CDT.h5 -o /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+WARNING:root:Running without mpi4py because No module named 'mpi4py'
+WARNING:root:Source dataset charge/raw_events has no inputfile in metadata stored under 'input_filename', using {self.input_filename} for RunData lookup
+WARNING:root:Could not find row matching /global/cfs/cdirs/dune/www/data/2x2/nearline/packet/beam/july10_2024/nominal_hv/packet-0050018-2024_07_10_10_16_18_CDT.h5 in data/proto_nd_flow/runlist-2x2-mcexample.txt
+~~~ H5FLOW ~~~
+output file: /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+input file: /global/cfs/cdirs/dune/www/data/2x2/nearline/packet/beam/july10_2024/nominal_hv/packet-0050018-2024_07_10_10_16_18_CDT.h5
+~~~~~~~~~~~~~~
+
+~~~ WORKFLOW (1/5) ~~~
+yamls/proto_nd_flow/workflows/charge/charge_event_building_data.yaml
+~~~~~~~~~~~~~~~~
+
+~~~ INIT ~~~
+Hello
+create RunData() /global/cfs/cdirs/dune/www/data/2x2/nearline/packet/beam/july10_2024/nominal_hv/packet-0050018-2024_07_10_10_16_18_CDT.h5
+create RawEventGenerator(charge/raw_events) /global/cfs/cdirs/dune/www/data/2x2/nearline/packet/beam/july10_2024/nominal_hv/packet-0050018-2024_07_10_10_16_18_CDT.h5
+RunData.init(charge/raw_events)
+RawEventGenerator.init()
+~~~~~~~~~~~~
+
+~~~ RUN ~~~
+Run loop on charge/raw_events:
+  
+  0%|          | 0/1 [00:00<?, ?it/s]100%|##########| 1/1 [07:29<00:00, 449.88s/it]100%|##########| 1/1 [07:29<00:00, 449.88s/it]
+WARNING:root:Loading geometry from ['data/proto_nd_flow/layouts_v5/multi_tile_layout-2.3.16_mod0_swap_T8T4T7.yaml', 'data/proto_nd_flow/layouts_v5/multi_tile_layout-2.3.16_mod1_noswap.yaml', 'data/proto_nd_flow/layouts_v5/multi_tile_layout-2.5.16_mod2_swap_T7T8.yaml', 'data/proto_nd_flow/layouts_v5/multi_tile_layout-2.3.16_mod3_swap_T5T8_T9T10.yaml']...
+WARNING:root:Loading geometry from data/proto_nd_flow/light_module_desc-5.0.0.yaml...
+~~~~~~~~~~~
+
+~~~ FINISH ~~~
+RawEventGenerator.finish()
+RunData.finish(charge/raw_events)
+~~~~~~~~~~~~~~
+
+~~~ WORKFLOW (2/5) ~~~
+yamls/proto_nd_flow/workflows/charge/charge_event_reconstruction_data.yaml
+~~~~~~~~~~~~~~~~
+
+~~~ INIT ~~~
+create RunData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create Geometry() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create H5FlowDatasetLoopGenerator(charge/raw_events) /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create timestamp_corrector: TimestampCorrector(packets_dset_name=charge/packets, ts_dset_name=charge/packets_corr_ts, correction={1: [0.0, 3e-07], 2: [0.0, 2.5e-06], 3: [0.0, 0.0], 4: [0.0, 7e-07], 5: [0.0, 1.7e-06], 6: [0.0, 3.1e-06], 7: [0.0, 4e-06], 8: [0.0, -2e-07]})
+create ext_trig_finder: ExternalTriggerFinder(packets_dset_name=charge/packets, ts_dset_name=charge/packets_corr_ts, ext_trigs_dset_name=charge/ext_trigs, pacman_trigger_enabled=True, pacman_trigger_word_filter=2)
+create raw_hit_builder: RawHitBuilder(packets_dset_name=charge/packets, ts_dset_name=charge/packets_corr_ts, hits_dset_name=charge/raw_hits)
+create event_builder: EventBuilder(hits_dset_name=charge/raw_hits, ext_trigs_dset_name=charge/ext_trigs, events_dset_name=charge/events)
+RunData.init(charge/raw_events)
+Geometry.init(charge/raw_events)
+H5FlowDatasetLoopGenerator.init()
+timestamp_corrector.init(charge/raw_events)
+ext_trig_finder.init(charge/raw_events)
+raw_hit_builder.init(charge/raw_events)
+event_builder.init(charge/raw_events)
+~~~~~~~~~~~~
+
+~~~ RUN ~~~
+Run loop on charge/raw_events:
+  timestamp_corrector -> ext_trig_finder -> raw_hit_builder -> event_builder
+  0%|          | 0/38 [00:00<?, ?it/s]  3%|2         | 1/38 [00:00<00:13,  2.83it/s]  5%|5         | 2/38 [00:00<00:10,  3.40it/s]  8%|7         | 3/38 [00:00<00:07,  4.64it/s] 11%|#         | 4/38 [00:01<00:15,  2.24it/s] 13%|#3        | 5/38 [00:01<00:08,  4.12it/s] 16%|#5        | 6/38 [00:01<00:04,  6.58it/s] 18%|#8        | 7/38 [00:02<00:10,  2.95it/s] 21%|##1       | 8/38 [00:02<00:08,  3.53it/s] 24%|##3       | 9/38 [00:02<00:06,  4.77it/s] 26%|##6       | 10/38 [00:02<00:08,  3.34it/s] 29%|##8       | 11/38 [00:03<00:06,  4.02it/s] 32%|###1      | 12/38 [00:03<00:08,  3.21it/s] 34%|###4      | 13/38 [00:03<00:07,  3.48it/s] 37%|###6      | 14/38 [00:04<00:10,  2.30it/s] 39%|###9      | 15/38 [00:04<00:12,  1.89it/s] 42%|####2     | 16/38 [00:05<00:08,  2.44it/s] 45%|####4     | 17/38 [00:06<00:22,  1.09s/it] 47%|####7     | 18/38 [00:06<00:12,  1.62it/s] 50%|#####     | 19/38 [00:07<00:07,  2.52it/s] 53%|#####2    | 20/38 [00:07<00:08,  2.21it/s] 55%|#####5    | 21/38 [00:09<00:27,  1.59s/it] 58%|#####7    | 22/38 [00:09<00:11,  1.45it/s] 61%|######    | 23/38 [00:10<00:04,  3.49it/s] 63%|######3   | 24/38 [00:10<00:04,  3.08it/s] 66%|######5   | 25/38 [00:11<00:07,  1.84it/s] 68%|######8   | 26/38 [00:11<00:03,  3.41it/s] 71%|#######1  | 27/38 [00:11<00:03,  2.78it/s] 74%|#######3  | 28/38 [00:11<00:02,  4.09it/s] 76%|#######6  | 29/38 [00:12<00:05,  1.57it/s] 79%|#######8  | 30/38 [00:12<00:02,  2.84it/s] 82%|########1 | 31/38 [00:14<00:07,  1.08s/it] 84%|########4 | 32/38 [00:15<00:07,  1.18s/it] 87%|########6 | 33/38 [00:15<00:01,  3.96it/s] 89%|########9 | 34/38 [00:18<00:10,  2.65s/it] 92%|#########2| 35/38 [00:18<00:02,  1.37it/s] 95%|#########4| 36/38 [00:19<00:01,  1.97it/s] 97%|#########7| 37/38 [00:19<00:00,  2.75it/s]100%|##########| 38/38 [00:20<00:00,  3.23it/s]100%|##########| 38/38 [00:20<00:00,  1.90it/s]
+~~~~~~~~~~~
+
+~~~ FINISH ~~~
+H5FlowDatasetLoopGenerator.finish()
+timestamp_corrector.finish(charge/raw_events)
+ext_trig_finder.finish(charge/raw_events)
+raw_hit_builder.finish(charge/raw_events)
+event_builder.finish(charge/raw_events)
+RunData.finish(charge/raw_events)
+Geometry.finish(charge/raw_events)
+~~~~~~~~~~~~~~
+
+~~~ WORKFLOW (3/5) ~~~
+yamls/proto_nd_flow/workflows/combined/combined_reconstruction_data.yaml
+~~~~~~~~~~~~~~~~
+
+~~~ INIT ~~~
+create RunData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create Geometry() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create LArData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create H5FlowDatasetLoopGenerator(charge/events) /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create t0_reco: T0Reconstruction(ext_trigs_dset_name=charge/ext_trigs, raw_hits_dset_name=charge/raw_hits, t0_dset_name=combined/t0)
+RunData.init(charge/events)
+Geometry.init(charge/events)
+LArData.init(charge/events)
+H5FlowDatasetLoopGenerator.init()
+t0_reco.init(charge/events)
+~~~~~~~~~~~~
+
+~~~ RUN ~~~
+Run loop on charge/events:
+  t0_reco
+  0%|          | 0/152 [00:00<?, ?it/s]  4%|3         | 6/152 [00:00<00:02, 58.54it/s]  9%|9         | 14/152 [00:00<00:02, 64.51it/s] 14%|#3        | 21/152 [00:00<00:01, 67.34it/s] 18%|#8        | 28/152 [00:00<00:01, 67.22it/s] 24%|##3       | 36/152 [00:00<00:01, 70.97it/s] 29%|##8       | 44/152 [00:00<00:01, 69.67it/s] 34%|###4      | 52/152 [00:00<00:01, 68.40it/s] 39%|###8      | 59/152 [00:00<00:01, 53.21it/s] 43%|####2     | 65/152 [00:01<00:01, 53.48it/s] 47%|####6     | 71/152 [00:01<00:01, 41.12it/s] 51%|#####     | 77/152 [00:01<00:01, 51.50it/s] 55%|#####5    | 84/152 [00:01<00:01, 41.86it/s] 59%|#####8    | 89/152 [00:01<00:01, 48.60it/s] 63%|######3   | 96/152 [00:01<00:00, 63.10it/s] 68%|######7   | 103/152 [00:01<00:00, 55.07it/s] 72%|#######2  | 110/152 [00:01<00:00, 62.88it/s] 77%|#######6  | 117/152 [00:02<00:00, 57.53it/s] 81%|########  | 123/152 [00:02<00:00, 45.61it/s] 84%|########4 | 128/152 [00:02<00:00, 36.13it/s] 88%|########8 | 134/152 [00:02<00:00, 31.44it/s] 91%|#########1| 139/152 [00:02<00:00, 48.06it/s] 95%|#########4| 144/152 [00:02<00:00, 48.05it/s] 99%|#########9| 151/152 [00:02<00:00, 63.43it/s]100%|##########| 152/152 [00:02<00:00, 53.97it/s]
+~~~~~~~~~~~
+
+~~~ FINISH ~~~
+H5FlowDatasetLoopGenerator.finish()
+t0_reco.finish(charge/events)
+RunData.finish(charge/events)
+Geometry.finish(charge/events)
+LArData.finish(charge/events)
+~~~~~~~~~~~~~~
+
+~~~ WORKFLOW (4/5) ~~~
+yamls/proto_nd_flow/workflows/charge/prompt_calibration_data.yaml
+~~~~~~~~~~~~~~~~
+
+~~~ INIT ~~~
+create RunData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create LArData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create Geometry() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create H5FlowDatasetLoopGenerator(charge/raw_events) /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create calib_hit_builder: CalibHitBuilder(events_dset_name=charge/events, packets_dset_name=charge/packets, packets_index_name=charge/packets_index, raw_hits_dset_name=charge/raw_hits, t0_dset_name=combined/t0, max_contrib_segments=10, calib_hits_dset_name=charge/calib_prompt_hits, vref_mv=1568.0, vcm_mv=478.1, adc_counts=256, gain=4.522, pedestal_file=/global/common/software/dune/mkramer/devel/flow4pedestal/reference-cold-pedestal-2024_06_05_08_28_19_CDTevd_ped.tile_id.decimal.json)
+RunData.init(charge/raw_events)
+LArData.init(charge/raw_events)
+Geometry.init(charge/raw_events)
+H5FlowDatasetLoopGenerator.init()
+calib_hit_builder.init(charge/raw_events)
+~~~~~~~~~~~~
+
+~~~ RUN ~~~
+Run loop on charge/raw_events:
+  calib_hit_builder
+  0%|          | 0/38 [00:00<?, ?it/s]  3%|2         | 1/38 [00:00<00:11,  3.31it/s]  5%|5         | 2/38 [00:00<00:08,  4.33it/s]  8%|7         | 3/38 [00:00<00:06,  5.52it/s] 11%|#         | 4/38 [00:01<00:12,  2.81it/s] 13%|#3        | 5/38 [00:01<00:06,  5.21it/s] 16%|#5        | 6/38 [00:01<00:04,  7.76it/s] 18%|#8        | 7/38 [00:01<00:07,  3.93it/s] 21%|##1       | 8/38 [00:01<00:06,  4.48it/s] 24%|##3       | 9/38 [00:02<00:04,  5.95it/s] 26%|##6       | 10/38 [00:02<00:06,  4.11it/s] 29%|##8       | 11/38 [00:02<00:05,  5.15it/s] 32%|###1      | 12/38 [00:02<00:06,  4.21it/s] 34%|###4      | 13/38 [00:02<00:05,  4.65it/s] 37%|###6      | 14/38 [00:03<00:08,  2.92it/s] 39%|###9      | 15/38 [00:03<00:09,  2.52it/s] 42%|####2     | 16/38 [00:03<00:07,  3.09it/s] 45%|####4     | 17/38 [00:04<00:17,  1.22it/s] 47%|####7     | 18/38 [00:05<00:09,  2.01it/s] 50%|#####     | 19/38 [00:05<00:06,  3.16it/s] 53%|#####2    | 20/38 [00:05<00:06,  2.72it/s] 55%|#####5    | 21/38 [00:07<00:20,  1.21s/it] 58%|#####7    | 22/38 [00:07<00:08,  1.82it/s] 61%|######    | 23/38 [00:07<00:03,  4.58it/s] 63%|######3   | 24/38 [00:08<00:03,  3.90it/s] 66%|######5   | 25/38 [00:08<00:05,  2.33it/s] 68%|######8   | 26/38 [00:08<00:02,  4.25it/s] 71%|#######1  | 27/38 [00:09<00:03,  3.36it/s] 74%|#######3  | 28/38 [00:09<00:01,  5.06it/s] 76%|#######6  | 29/38 [00:09<00:04,  1.98it/s] 79%|#######8  | 30/38 [00:10<00:02,  3.55it/s] 82%|########1 | 31/38 [00:11<00:05,  1.17it/s] 84%|########4 | 32/38 [00:11<00:05,  1.08it/s] 87%|########6 | 33/38 [00:12<00:01,  4.92it/s] 89%|########9 | 34/38 [00:14<00:08,  2.03s/it] 92%|#########2| 35/38 [00:14<00:01,  1.69it/s] 95%|#########4| 36/38 [00:15<00:00,  2.44it/s] 97%|#########7| 37/38 [00:15<00:00,  3.39it/s]100%|##########| 38/38 [00:15<00:00,  4.17it/s]100%|##########| 38/38 [00:15<00:00,  2.42it/s]
+/global/u1/y/yuxuan/firstTry/2x2_sim/run-ndlar-flow/flow.venv/lib/python3.11/site-packages/sklearn/base.py:380: InconsistentVersionWarning: Trying to unpickle estimator KernelDensity from version 1.3.2 when using version 1.6.1. This might lead to breaking code or invalid results. Use at your own risk. For more info please refer to:
+https://scikit-learn.org/stable/model_persistence.html#security-maintainability-limitations
+  warnings.warn(
+~~~~~~~~~~~
+
+~~~ FINISH ~~~
+H5FlowDatasetLoopGenerator.finish()
+calib_hit_builder.finish(charge/raw_events)
+RunData.finish(charge/raw_events)
+LArData.finish(charge/raw_events)
+Geometry.finish(charge/raw_events)
+~~~~~~~~~~~~~~
+
+~~~ WORKFLOW (5/5) ~~~
+yamls/proto_nd_flow/workflows/charge/final_calibration_data.yaml
+~~~~~~~~~~~~~~~~
+
+~~~ INIT ~~~
+create RunData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create LArData() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create Geometry() /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create H5FlowDatasetLoopGenerator(charge/raw_events) /global/u1/y/yuxuan/firstTry/2x2_sim/tmp/run-ndlar-flow//.0000000.FLOW.hdf5
+create calib_noise_filter: CalibNoiseFilter(events_dset_name=charge/events, hits_name=charge/calib_prompt_hits, filter_function_names=['hot_pixel_filter', 'correlated_post_trigger_filter', 'low_current_filter'], low_current_filter__threshold=6.0, hot_pixel_filter__max_n_hits=35, calib_hits_dset_name=charge/calib_final_hits, mc_hit_frac_dset_name=mc_truth/calib_final_hit_backtrack)
+RunData.init(charge/raw_events)
+LArData.init(charge/raw_events)
+Geometry.init(charge/raw_events)
+H5FlowDatasetLoopGenerator.init()
+calib_noise_filter.init(charge/raw_events)
+using threshold: 6.0
+~~~~~~~~~~~~
+
+~~~ RUN ~~~
+Run loop on charge/raw_events:
+  calib_noise_filter
+  0%|          | 0/152 [00:00<?, ?it/s]  1%|          | 1/152 [00:00<02:28,  1.02it/s]  1%|1         | 2/152 [00:01<02:01,  1.23it/s]  2%|1         | 3/152 [00:02<02:26,  1.02it/s]  3%|2         | 4/152 [00:03<02:32,  1.03s/it]  3%|3         | 5/152 [00:05<03:54,  1.59s/it]  4%|3         | 6/152 [00:05<00:56,  2.57it/s]  5%|4         | 7/152 [00:07<03:18,  1.37s/it]  5%|5         | 8/152 [00:07<01:59,  1.21it/s]  6%|5         | 9/152 [00:09<02:36,  1.10s/it]  7%|6         | 10/152 [00:10<02:11,  1.08it/s]  7%|7         | 11/152 [00:10<01:31,  1.54it/s]  8%|7         | 12/152 [00:11<02:15,  1.03it/s]  9%|8         | 13/152 [00:12<02:16,  1.02it/s]  9%|9         | 14/152 [00:13<02:02,  1.13it/s] 10%|9         | 15/152 [00:14<01:37,  1.41it/s] 11%|#         | 16/152 [00:15<03:01,  1.34s/it] 11%|#1        | 17/152 [00:16<01:44,  1.29it/s] 12%|#1        | 18/152 [00:17<01:35,  1.40it/s] 12%|#2        | 19/152 [00:17<01:57,  1.13it/s] 13%|#3        | 20/152 [00:19<03:19,  1.51s/it] 14%|#3        | 21/152 [00:20<01:40,  1.30it/s] 14%|#4        | 22/152 [00:20<01:44,  1.25it/s] 15%|#5        | 23/152 [00:21<01:04,  1.99it/s] 16%|#5        | 24/152 [00:22<02:05,  1.02it/s] 16%|#6        | 25/152 [00:23<03:04,  1.45s/it] 17%|#7        | 26/152 [00:24<01:30,  1.40it/s] 18%|#7        | 27/152 [00:25<01:50,  1.13it/s] 18%|#8        | 28/152 [00:27<03:49,  1.85s/it] 19%|#9        | 29/152 [00:27<01:04,  1.90it/s] 20%|#9        | 30/152 [00:29<02:24,  1.18s/it] 20%|##        | 31/152 [00:30<02:37,  1.30s/it] 21%|##1       | 32/152 [00:31<02:26,  1.22s/it] 22%|##1       | 33/152 [00:32<01:09,  1.71it/s] 22%|##2       | 34/152 [00:32<01:22,  1.43it/s] 23%|##3       | 35/152 [00:34<02:29,  1.28s/it] 24%|##3       | 36/152 [00:35<02:23,  1.23s/it] 24%|##4       | 37/152 [00:35<01:02,  1.84it/s] 25%|##5       | 38/152 [00:37<03:16,  1.73s/it] 26%|##5       | 39/152 [00:38<02:18,  1.22s/it] 26%|##6       | 40/152 [00:39<01:59,  1.07s/it] 27%|##6       | 41/152 [00:41<03:04,  1.66s/it] 28%|##7       | 42/152 [00:42<02:09,  1.17s/it] 28%|##8       | 43/152 [00:43<01:52,  1.03s/it] 29%|##8       | 44/152 [00:44<01:34,  1.15it/s] 30%|##9       | 45/152 [00:45<01:49,  1.02s/it] 30%|###       | 46/152 [00:46<01:30,  1.17it/s] 31%|###       | 47/152 [00:47<01:55,  1.10s/it] 32%|###1      | 48/152 [00:48<01:57,  1.13s/it] 32%|###2      | 49/152 [00:49<00:35,  2.88it/s] 33%|###2      | 50/152 [00:49<01:18,  1.30it/s] 34%|###3      | 51/152 [00:51<02:58,  1.77s/it] 34%|###4      | 52/152 [00:52<01:48,  1.08s/it] 35%|###4      | 53/152 [00:53<01:52,  1.13s/it] 36%|###5      | 54/152 [00:54<01:28,  1.11it/s] 36%|###6      | 55/152 [00:56<02:55,  1.81s/it] 37%|###6      | 56/152 [00:58<02:22,  1.48s/it] 38%|###7      | 57/152 [00:59<02:55,  1.85s/it] 38%|###8      | 58/152 [01:01<02:22,  1.52s/it] 39%|###8      | 59/152 [01:02<02:02,  1.31s/it] 39%|###9      | 60/152 [01:04<02:32,  1.65s/it] 40%|####      | 61/152 [01:05<01:19,  1.15it/s] 41%|####      | 62/152 [01:06<02:21,  1.57s/it] 41%|####1     | 63/152 [01:07<01:00,  1.47it/s] 42%|####2     | 64/152 [01:08<01:48,  1.23s/it] 43%|####2     | 65/152 [01:10<02:02,  1.41s/it] 43%|####3     | 66/152 [01:10<01:01,  1.40it/s] 44%|####4     | 67/152 [01:11<01:09,  1.22it/s] 45%|####4     | 68/152 [01:13<02:00,  1.43s/it] 45%|####5     | 69/152 [01:14<02:25,  1.75s/it] 46%|####6     | 70/152 [01:16<01:33,  1.15s/it] 47%|####6     | 71/152 [01:17<02:12,  1.63s/it] 47%|####7     | 72/152 [01:19<02:51,  2.14s/it] 48%|####8     | 73/152 [01:20<01:12,  1.10it/s] 49%|####8     | 74/152 [01:21<01:16,  1.02it/s] 49%|####9     | 75/152 [01:23<01:41,  1.31s/it] 50%|#####     | 76/152 [01:24<01:34,  1.24s/it] 51%|#####     | 77/152 [01:25<02:07,  1.70s/it] 51%|#####1    | 78/152 [01:26<01:00,  1.21it/s] 52%|#####1    | 79/152 [01:28<01:33,  1.28s/it] 53%|#####2    | 80/152 [01:29<01:11,  1.01it/s] 53%|#####3    | 81/152 [01:30<01:22,  1.16s/it] 54%|#####3    | 82/152 [01:30<00:48,  1.45it/s] 55%|#####4    | 83/152 [01:32<01:20,  1.17s/it] 55%|#####5    | 84/152 [01:33<01:19,  1.17s/it] 56%|#####5    | 85/152 [01:36<03:15,  2.92s/it] 57%|#####6    | 86/152 [01:39<03:57,  3.60s/it] 57%|#####7    | 87/152 [01:40<00:47,  1.36it/s] 58%|#####7    | 88/152 [01:41<01:22,  1.29s/it] 59%|#####8    | 89/152 [01:42<00:55,  1.15it/s] 59%|#####9    | 90/152 [01:43<01:06,  1.07s/it] 60%|#####9    | 91/152 [01:44<00:56,  1.08it/s] 61%|######    | 92/152 [01:46<01:31,  1.52s/it] 61%|######1   | 93/152 [01:46<00:46,  1.27it/s] 62%|######1   | 94/152 [01:47<00:33,  1.71it/s] 62%|######2   | 95/152 [01:48<01:06,  1.17s/it] 63%|######3   | 96/152 [01:49<01:02,  1.12s/it] 64%|######3   | 97/152 [01:50<00:55,  1.01s/it] 64%|######4   | 98/152 [01:52<01:04,  1.19s/it] 65%|######5   | 99/152 [01:52<00:31,  1.70it/s] 66%|######5   | 100/152 [01:53<00:46,  1.13it/s] 66%|######6   | 101/152 [01:54<01:06,  1.30s/it] 67%|######7   | 102/152 [01:56<00:58,  1.17s/it] 68%|######7   | 103/152 [01:57<00:54,  1.10s/it] 68%|######8   | 104/152 [01:57<00:34,  1.40it/s] 69%|######9   | 105/152 [01:58<00:30,  1.55it/s] 70%|######9   | 106/152 [01:59<00:49,  1.08s/it] 70%|#######   | 107/152 [02:01<01:17,  1.71s/it] 71%|#######1  | 108/152 [02:03<01:30,  2.07s/it] 72%|#######1  | 109/152 [02:04<00:48,  1.13s/it] 72%|#######2  | 110/152 [02:06<01:40,  2.38s/it] 73%|#######3  | 111/152 [02:07<00:32,  1.28it/s] 74%|#######3  | 112/152 [02:09<00:59,  1.48s/it] 74%|#######4  | 113/152 [02:10<01:06,  1.71s/it] 75%|#######5  | 114/152 [02:11<00:22,  1.66it/s] 76%|#######5  | 115/152 [02:11<00:21,  1.75it/s] 76%|#######6  | 116/152 [02:13<00:51,  1.42s/it] 77%|#######6  | 117/152 [02:14<00:54,  1.56s/it] 78%|#######7  | 118/152 [02:15<00:32,  1.05it/s] 78%|#######8  | 119/152 [02:17<00:54,  1.66s/it] 79%|#######8  | 120/152 [02:18<00:31,  1.02it/s] 80%|#######9  | 121/152 [02:19<00:23,  1.31it/s] 80%|########  | 122/152 [02:20<00:35,  1.17s/it] 81%|########  | 123/152 [02:22<00:50,  1.76s/it] 82%|########1 | 124/152 [02:23<00:45,  1.64s/it] 82%|########2 | 125/152 [02:26<01:10,  2.60s/it] 83%|########2 | 126/152 [02:27<00:21,  1.19it/s] 84%|########3 | 127/152 [02:28<00:31,  1.26s/it] 84%|########4 | 128/152 [02:30<00:43,  1.82s/it] 85%|########4 | 129/152 [02:31<00:16,  1.41it/s] 86%|########5 | 130/152 [02:31<00:13,  1.61it/s] 86%|########6 | 131/152 [02:33<00:27,  1.33s/it] 87%|########6 | 132/152 [02:34<00:28,  1.41s/it] 88%|########7 | 133/152 [02:35<00:17,  1.10it/s] 88%|########8 | 134/152 [02:43<02:32,  8.46s/it] 89%|########8 | 135/152 [02:45<00:26,  1.55s/it] 89%|########9 | 136/152 [02:46<00:13,  1.20it/s] 90%|######### | 137/152 [02:47<00:13,  1.09it/s] 91%|######### | 138/152 [02:49<00:33,  2.40s/it] 91%|#########1| 139/152 [02:50<00:16,  1.27s/it] 92%|#########2| 140/152 [02:53<00:28,  2.39s/it] 93%|#########2| 141/152 [02:54<00:14,  1.29s/it] 93%|#########3| 142/152 [02:55<00:13,  1.35s/it] 94%|#########4| 143/152 [02:56<00:06,  1.31it/s] 95%|#########4| 144/152 [02:58<00:13,  1.73s/it] 95%|#########5| 145/152 [03:00<00:15,  2.17s/it] 96%|#########6| 146/152 [03:01<00:04,  1.20it/s] 97%|#########6| 147/152 [03:01<00:02,  2.24it/s] 97%|#########7| 148/152 [03:04<00:10,  2.72s/it] 98%|#########8| 149/152 [03:05<00:01,  1.54it/s] 99%|#########8| 150/152 [03:07<00:04,  2.05s/it] 99%|#########9| 151/152 [03:08<00:01,  1.62s/it]100%|##########| 152/152 [03:09<00:00,  1.25it/s]100%|##########| 152/152 [03:09<00:00,  1.25s/it]
+~~~~~~~~~~~
+
+~~~ FINISH ~~~
+H5FlowDatasetLoopGenerator.finish()
+calib_noise_filter.finish(charge/raw_events)
+RunData.finish(charge/raw_events)
+LArData.finish(charge/raw_events)
+Geometry.finish(charge/raw_events)
+~~~~~~~~~~~~~~
+
