@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
 # Helpful if working with ndlar
-export ARCUBE_GEOM=geometry/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.gdml
-export ARCUBE_PANDORA_GEOM=LArRecoND/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.root
+#export ARCUBE_GEOM=geometry/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.gdml
+#export ARCUBE_PANDORA_GEOM=LArRecoND/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.root
 
 
 if [ -z "$1" ]; then
