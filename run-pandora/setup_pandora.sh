@@ -30,8 +30,21 @@ export FW_SEARCH_PATH=${MY_TEST_AREA}/LArMachineLearningData:${FW_SEARCH_PATH}
 
 # Geometry GDML file
 GDMLName='Merged2x2MINERvA_v4_withRock'
-export ARCUBE_GEOM=${ARCUBE_DIR}/geometry/Merged2x2MINERvA_v4/${GDMLName}.gdml
-export ARCUBE_PANDORA_GEOM=${ARCUBE_PANDORA_INSTALL}/LArRecoND/${GDMLName}.root
+if [ -n "$ARCUBE_GEOM" ]; then
+  # If ARCUBE_GEOM is specified at yaml level, follow the convention of other 
+  # production steps (no ARCUBE_DIR at the start).
+  export ARCUBE_GEOM=${ARCUBE_DIR}/${ARCUBE_GEOM}
+  GDMLName=`basename $ARCUBE_GEOM .gdml`
+else
+  export ARCUBE_GEOM=${ARCUBE_DIR}/geometry/Merged2x2MINERvA_v4/${GDMLName}.gdml
+fi
+if [ -n "$ARCUBE_PANDORA_GEOM" ]; then
+  # If ARCUBE_PANDORA_GEOM is specified at yaml level, follow the ARCUBE_GEOM
+  # convention. 
+  export ARCUBE_PANDORA_GEOM=${ARCUBE_PANDORA_INSTALL}/${ARCUBE_PANDORA_GEOM}
+else
+  export ARCUBE_PANDORA_GEOM=${ARCUBE_PANDORA_INSTALL}/LArRecoND/${GDMLName}.root
+fi
 
 # Specify LArRecoND input data format: SP (SpacePoint data) or SPMC (SpacePoint MC)
 export ARCUBE_PANDORA_INPUT_FORMAT=SPMC

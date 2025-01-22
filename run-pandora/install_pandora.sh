@@ -1,5 +1,25 @@
 #!/usr/bin/env bash
 
+# Helpful if working with ndlar
+export ARCUBE_GEOM=geometry/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.gdml
+export ARCUBE_PANDORA_GEOM=LArRecoND/nd_hall_with_lar_tms_sand_TDR_Production_geometry_v_1.0.3.root
+
+
+if [ -z "$1" ]; then
+  echo "Install of Pandora is detector specific, you must pass either '2x2' or 'ndlar' as"
+  echo "the first positional argument of this script."
+  exit 1
+fi
+
+if { [ -z "$ARCUBE_GEOM" ] || [ -z "$ARCUBE_PANDORA_GEOM" ]; } && [ "$1" == "ndlar" ]; then
+  echo "If installing ndlar, you must also export"
+  echo "ARCUBE_GEOM and ARCUBE_PANDORA_GEOM. There"
+  echo "are some handy commented lines at the top"
+  echo "of this script to help with that."
+  exit 2
+fi
+
+
 export ARCUBE_RUNTIME=SHIFTER
 export ARCUBE_CONTAINER=fermilab/fnal-wn-sl7:latest
 export ARCUBE_DIR=$(realpath "$PWD"/..)
