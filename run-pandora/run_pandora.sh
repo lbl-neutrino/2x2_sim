@@ -30,7 +30,7 @@ ln -sf $inFile LArRecoNDInput.root
 
 # Run LArRecoND Pandora program over all events
 run ${ARCUBE_PANDORA_INSTALL}/LArRecoND/bin/PandoraInterface -i ${ARCUBE_PANDORA_INSTALL}/LArRecoND/settings/PandoraSettings_LArRecoND_ThreeD.xml \
-    -r AllHitsNu -f ${ARCUBE_PANDORA_INPUT_FORMAT} -g ${ARCUBE_PANDORA_GEOM} -e $inFile -j both -M -N
+    -r AllHitsSliceNu -f ${ARCUBE_PANDORA_INPUT_FORMAT} -g ${ARCUBE_PANDORA_GEOM} -e $inFile -j both -M -N
 
 # Move LArRecoND hierarchy analysis ROOT file to output dir
 tmpAnaOut=${tmpRunDir}/LArRecoND.root
