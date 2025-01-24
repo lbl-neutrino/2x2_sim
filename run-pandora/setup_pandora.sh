@@ -9,6 +9,10 @@ setup eigen v3_3_5
 # Sets ROOT version consistent with edepsim production version
 setup edepsim v3_2_0c -q e20:prof
 
+# Only export onwards if the vars are filled. Exporting OMP_NUM_THREADS as 1
+# helps with memory consumption in flow2root.
+[ -n "$ARCUBE_OMP_NUM_THREADS" ] && export OMP_NUM_THREADS=$ARCUBE_OMP_NUM_THREADS
+
 # Pandora install directory
 export ARCUBE_PANDORA_BASEDIR=${ARCUBE_DIR}/run-pandora
 export ARCUBE_PANDORA_INSTALL=${ARCUBE_PANDORA_BASEDIR}/install
