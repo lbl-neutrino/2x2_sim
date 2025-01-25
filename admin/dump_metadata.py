@@ -128,7 +128,7 @@ def get_parents(datapath: Path, args: argparse.Namespace):
         return None
     elif args.app in ['run-larnd-sim', 'run-tms-reco']:
         if not (base := args.parents):
-            base = f'{basename}.spill'
+            base = f'{basename}.spill'  # todo: may need to be fixed.
         return [f'{base}.{fileno}.EDEPSIM_SPILLS.root']
     elif args.app == 'run-ndlar-flow':
         if not (base := args.parents):
@@ -148,7 +148,7 @@ def dump_metadata(datapath: Path, args: argparse.Namespace):
     meta = {}
 
     meta['file_name'] = datapath.name
-    meta['namespace'] = 'neardet-lar-tms'
+    meta['namespace'] = 'ndprod'
     meta['file_size'] = datapath.stat().st_size
 
     if args.sam:                # for samweb validate-metadata
@@ -224,15 +224,15 @@ def main():
     ap.add_argument('--mc', action='store_true',)
     ap.add_argument('--genie-tune', default='AR23_20i_00_000', help='Name of genie tune (CMC)')
     ap.add_argument('--nu', action='store_true', help='true for nu, false for rock')
-    ap.add_argument('--parents', help='record parent info')
+#    ap.add_argument('--parents', help='record parent info')        # TODO: to get the parent info is not easy, so let's skip for now...
     ap.add_argument('--app', help='Name of application', required=True,
                     choices=['run-spill-build',
                              'run-larnd-sim',
                              'run-ndlar-flow',
                              'run-tms-reco']) # TODO: will need to add the further processes
-    ap.add_argument('--family', help='Name of family', required=True, 
+    ap.add_argument('--family', help='Name of family',
                     choices=['2x2_sim', 'ND_Production'], default='ND_Production') # TODO: Are we happy with ND_Production as the family?
-    ap.add_argument('--data-stream ', help='type of data taking (commissioning, calibration, test, physics, cosmics)', default='physics')
+    ap.add_argument('--data-stream', help='type of data taking (commissioning, calibration, test, physics, cosmics)', default='physics')
     ap.add_argument('--geom', help='Name of geometry', required=True)
     ap.add_argument('--top-vol', help='Name of top volume', required=True)
     ap.add_argument('--repo-2x2sim', help='Path to 2x2sim repo')
