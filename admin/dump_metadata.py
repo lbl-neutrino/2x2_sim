@@ -222,7 +222,7 @@ def main():
     inputs.add_argument('--all', type=Path, help='Whole directory to process')
     ap.add_argument('--campaign', help='Name of campaign', required=True)
     ap.add_argument('--mc', action='store_true',)
-    ap.add_argument('--genie-tune', default='AR23_20i_00_000', help='Name of genie tune (CMC)', required=True)
+    ap.add_argument('--genie-tune', default='AR23_20i_00_000', help='Name of genie tune (CMC)')
     ap.add_argument('--nu', action='store_true', help='true for nu, false for rock')
     ap.add_argument('--parents', help='record parent info')
     ap.add_argument('--app', help='Name of application', required=True,
@@ -232,6 +232,7 @@ def main():
                              'run-tms-reco']) # TODO: will need to add the further processes
     ap.add_argument('--family', help='Name of family', required=True, 
                     choices=['2x2_sim', 'ND_Production'], default='ND_Production') # TODO: Are we happy with ND_Production as the family?
+    ap.add_argument('--data-stream ', help='type of data taking (commissioning, calibration, test, physics, cosmics)', default='physics')
     ap.add_argument('--geom', help='Name of geometry', required=True)
     ap.add_argument('--top-vol', help='Name of top volume', required=True)
     ap.add_argument('--repo-2x2sim', help='Path to 2x2sim repo')
