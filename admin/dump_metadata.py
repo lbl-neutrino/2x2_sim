@@ -60,59 +60,41 @@ def get_checksum(datapath: Path, chunksize=1_000_000_000):
     return cksum & 0xffffffff
 
 
-def get_ext(args: argparse.Namespace):
-    match args.app:
-        case 'run-spill-build' | 'run-tms-reco':
-            return 'root'
-        case 'run-larnd-sim' | 'run-ndlar-flow':
-            return 'hdf5'
+
+def file_format(datapath: Path):
+    if datapath.suffix == '.h5':
+        return 'hdf5'
+    return datapath.suffix[1:]
 
 
 def get_runtype(args: argparse.Namespace):
-    match args.app:
-        case 'run-spill-build':
-            return 'neardet-2x2'
-        case 'run-larnd-sim' | 'run-ndlar-flow':
-            return 'neardet-2x2-lar'
-        # TODO: To be decided.
-        # Discussed around here: https://dunescience.slack.com/archives/CKXSC8EG3/p1697488314084449
-        case 'run-tms-reco':
-            return 'neardet'
+    if args.app == 'run-spill-build':
+        return 'neardet-2x2'
+    elif args.app in ['run-larnd-sim', 'run-ndlar-flow']:
+        return 'neardet-2x2-lar'
+    elif args.app == 'run-tms-reco':
+        return 'neardet-lar-tms'
 
 
 def get_data_tier(args: argparse.Namespace):
-    match args.app:
-        case 'run-spill-build':
-            return 'simulated'
-        case 'run-larnd-sim':
-            return 'detector-simulated'
-        case 'run-ndlar-flow':
-            return 'hit-reconstructed'
-        # TODO: This is to be decided.
-        # Discussed around here: https://dunescience.slack.com/archives/CKXSC8EG3/p1697490158091829
-        case 'run-tms-reco':
-            return 'root-tuple'
+    if args.app == 'run-spill-build':
+        return 'simulated'
+    elif args.app == 'run-larnd-sim':
+        return 'detector-simulated'
+    elif args.app == 'run-ndlar-flow':
+        return 'hit-reconstructed'
+    elif args.app == 'run-tms-reco':  # TODO: This is to be decided.
+        return 'root-tuple'
 
 
 def get_event_stats(datapath: Path, args: argparse.Namespace):
-    match args.app:
-        case 'run-spill-build':
-            return get_event_stats_edep(datapath)
-        case 'run-larnd-sim':
-            return get_event_stats_hdf5(datapath, 'vertices', args.event_id_var)
-        case 'run-ndlar-flow':
-            return get_event_stats_hdf5(datapath, '/mc_truth/trajectories/data',
-                                        args.event_id_var)
-        # TODO: Decide what to do here. We could
-        # write a new function which queries the 
-        # TMSRECO root file. This is only beneficial
-        # if the "number of tracks which deposit
-        # energy in the TMS" can be obtained from
-        # these files. If not, set up the logic to 
-        # use the information of the parent EDEPSIM_SPILLS
-        # files.
-        #case 'run-tms-reco':
-        #    return get_event_stats_edep(datapath)
+    if args.app == 'run-spill-build':
+        return get_event_stats_edep(datapath)
+    elif args.app == 'run-larnd-sim':
+        return get_event_stats_hdf5(datapath, 'vertices', args.event_id_var)
+    elif args.app == 'run-ndlar-flow':
+        return get_event_stats_hdf5(datapath, '/mc_truth/trajectories/data',
+                                    args.event_id_var)
 
 
 def get_parents(datapath: Path, args: argparse.Namespace):
@@ -120,17 +102,16 @@ def get_parents(datapath: Path, args: argparse.Namespace):
     fileno = parts[-3]              # 00321
     basename = '.'.join(parts[:-4]) # MiniRun4_1E19_RHC
 
-    match args.app:
-        case 'run-spill-build':
-            return None
-        case 'run-larnd-sim' | 'run-tms-reco':
-            if not (base := args.parents):
-                base = f'{basename}.spill'
-            return [f'{base}.{fileno}.EDEPSIM_SPILLS.root']
-        case 'run-ndlar-flow':
-            if not (base := args.parents):
-                base = f'{basename}.larnd'
-            return [f'{base}.{fileno}.LARNDSIM.hdf5']
+    if args.app == 'run-spill-build':
+        return None
+    elif args.app in ['run-larnd-sim', 'run-tms-reco']:
+        if not (base := args.parents):
+            base = f'{basename}.spill'
+        return [f'{base}.{fileno}.EDEPSIM_SPILLS.root']
+    elif args.app == 'run-ndlar-flow':
+        if not (base := args.parents):
+            base = f'{basename}.larnd'
+        return [f'{base}.{fileno}.LARNDSIM.hdf5']
 
 
 def get_runno(datapath: Path):
