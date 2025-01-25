@@ -40,8 +40,8 @@ def main():
     ap.add_argument('--base-dir', required=True)
     ap.add_argument('--ghep-nu-name', required=False)
     ap.add_argument('--ghep-rock-name', required=False)
-    ap.add_argument('--spine-name', required=True)
-    ap.add_argument('--pandora-name', required=True)
+    ap.add_argument('--spine-name', required=False)
+    ap.add_argument('--pandora-name', required=False)
     ap.add_argument('--tmsreco-name', required=False)
     ap.add_argument('--minerva-name', required=False)
     ap.add_argument('--edepsim-name', required=False)
@@ -54,6 +54,9 @@ def main():
 
     if not args.ghep_nu_name and not args.ghep_rock_name:
         raise ValueError("One or both of ghep-nu-name and ghep-rock-name must be specified")
+
+    if not args.spine_name and not args.pandora_name:
+        raise ValueError("One or both of spine-name and pandora-name must be specified")
 
     with open(args.cfg_file, 'w') as outf:
         outf.write(PREAMBLE)
@@ -73,13 +76,15 @@ def main():
         caf_path = args.caf_path
         outf.write(f'nd_cafmaker.CAFMakerSettings.OutputFile: "{caf_path}"\n')
 
-        spine_path = get_path(args.base_dir, 'run-mlreco', args.spine_name,
-                               'MLRECO_SPINE', 'hdf5', args.file_id)
-        outf.write(f'nd_cafmaker.CAFMakerSettings.NDLArRecoFile: "{spine_path}"\n')
+        if args.spine_name:
+            spine_path = get_path(args.base_dir, 'run-mlreco', args.spine_name,
+                                  'MLRECO_SPINE', 'hdf5', args.file_id)
+            outf.write(f'nd_cafmaker.CAFMakerSettings.NDLArRecoFile: "{spine_path}"\n')
 
-        pandora_path = get_path(args.base_dir, 'run-pandora', args.pandora_name,
-                                'LAR_RECO_ND', 'root', args.file_id)
-        outf.write(f'nd_cafmaker.CAFMakerSettings.PandoraLArRecoNDFile: "{pandora_path}"\n')
+        if args.pandora_name:
+            pandora_path = get_path(args.base_dir, 'run-pandora', args.pandora_name,
+                                    'LAR_RECO_ND', 'root', args.file_id)
+            outf.write(f'nd_cafmaker.CAFMakerSettings.PandoraLArRecoNDFile: "{pandora_path}"\n')
 
         if args.minerva_name:
             minerva_path = get_path(args.base_dir, 'run-minerva', args.minerva_name,
@@ -91,10 +96,9 @@ def main():
                                     'TMSRECO', 'root', args.file_id)
             outf.write(f'nd_cafmaker.CAFMakerSettings.TMSRecoFile: "{tmsreco_path}"\n')
 
-        if args.edepsim_name:
-            edepsim_path = get_path(args.base_dir, 'run-spill-build', args.edepsim_name,
-                                    'EDEPSIM_SPILLS','root',args.file_id) 
-            outf.write(f'nd_cafmaker.CAFMakerSettings.EdepsimFile: "{edepsim_path}"\n')
+        edepsim_path = get_path(args.base_dir, 'run-spill-build', args.edepsim_name,
+                                'EDEPSIM_SPILLS','root',args.file_id) 
+        outf.write(f'nd_cafmaker.CAFMakerSettings.EdepsimFile: "{edepsim_path}"\n')
 
         if args.extra_lines:
             for extra_line in args.extra_lines.split(";"): 
