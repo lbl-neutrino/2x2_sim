@@ -198,11 +198,12 @@ def dump_metadata(datapath: Path, args: argparse.Namespace):
             'dune_mc.nu': args.nu,
             'dune_mc.rock': not args.nu,
 
-            'cluster.gen_site': 'nersc',
-            'cluster.hostname' : 'xx',                       # todo: do we want these at all.....?
-            'cluster.os' : 'xx',
-            'cluster.os_version' : 'xx',
-            'cluster.compiler' : 'xx',
+            # todo: we will need to return to this, once we can run this script WITHIN the nersc job...
+            # 'cluster.gen_site': 'nersc',
+            # 'cluster.hostname' : 'xx',
+            # 'cluster.os' : 'xx',
+            # 'cluster.os_version' : 'xx',
+            # 'cluster.compiler' : 'xx',
 
         }
         meta['metadata'].update(mc_metadata)
