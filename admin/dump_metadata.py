@@ -222,7 +222,7 @@ def main():
     inputs.add_argument('--all', type=Path, help='Whole directory to process')
     ap.add_argument('--campaign', help='Name of campaign', required=True)
     ap.add_argument('--mc', action='store_true',)
-    ap.add_argument('--genie-tune', help='Name of genie tune (CMC)', required=True)
+    ap.add_argument('--genie-tune', default='AR23_20i_00_000', help='Name of genie tune (CMC)', required=True)
     ap.add_argument('--nu', action='store_true', help='true for nu, false for rock')
     ap.add_argument('--parents', help='record parent info')
     ap.add_argument('--app', help='Name of application', required=True,
