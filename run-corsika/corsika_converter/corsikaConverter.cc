@@ -464,6 +464,9 @@ int main(int argc, char *argv[]) {
                             //}
 
                             //if (StdHepN > 0) {
+                            /* This inserts an empty event into the CORSIKA record / ROOT output
+                             * It was part of the original code and commented out to test if it
+                             * is really needed.
                             memset(StdHepPdg, 0, sizeof(StdHepPdg));
                             memset(StdHepP4, 0, sizeof(StdHepP4));
                             memset(StdHepX4, 0, sizeof(StdHepX4));
@@ -475,6 +478,7 @@ int main(int argc, char *argv[]) {
                             StdHepN++;
                             gRooTracker->Fill();
                             particleCounter++;
+                            */
                         }
                     }
                 }
